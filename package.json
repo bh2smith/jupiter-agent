@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "fmt": "prettier . --write",
+    "lint": "prettier {src,tests}/**/*.ts --check",
+    "fmt": "prettier {src,tests}/**/*.ts --write",
     "sample": "bun run src/sample.ts"
   },
   "devDependencies": {
