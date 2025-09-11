@@ -27,7 +27,10 @@ async function main() {
   } else {
     // demo: ephemeral keypair on devnet
     payer = Keypair.generate();
-    console.log("Using Randomly Generated Secret Key:", bs58.encode(payer.secretKey));
+    console.log(
+      "Using Randomly Generated Secret Key:",
+      bs58.encode(payer.secretKey),
+    );
     const signature = await connection.requestAirdrop(
       payer.publicKey,
       1_000_000_000,
@@ -50,7 +53,9 @@ async function main() {
 
   const tx = new Transaction().add(ix);
   const sig = await sendAndConfirmTransaction(connection, tx, [payer]);
-  console.log(`✅ Sent ${transferParams.lamports}-lamport transfer to ${transferParams.toPubkey}`);
+  console.log(
+    `✅ Sent ${transferParams.lamports}-lamport transfer to ${transferParams.toPubkey}`,
+  );
   console.log(
     `Explorer: https://explorer.solana.com/tx/${sig}?cluster=${RPC_URL.includes("devnet") ? "devnet" : "mainnet"}`,
   );
