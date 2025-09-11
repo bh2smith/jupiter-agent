@@ -9,12 +9,14 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "dotenv": "^17.2.2",
     "prettier": "^3.6.2"
   },
   "peerDependencies": {
     "typescript": "^5"
   },
   "dependencies": {
+    "@jup-ag/api": "^6.0.44",
     "@solana/web3.js": "^1.98.4",
     "bs58": "^6.0.0"
   }
