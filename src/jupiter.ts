@@ -1,29 +1,20 @@
+// Adapted from https://github.com/jup-ag/jupiter-quote-api-node/tree/main/example
+
 import { createJupiterApiClient } from "@jup-ag/api";
-import type {
-  QuoteGetRequest,
-  QuoteResponse,
-  // SwapResponse
-} from "@jup-ag/api";
+import type { QuoteGetRequest, QuoteResponse } from "@jup-ag/api";
 import { Connection, Keypair, VersionedTransaction } from "@solana/web3.js";
-// import { Wallet } from "@project-serum/anchor";
 import bs58 from "bs58";
-// import { transactionSenderAndConfirmationWaiter } from "./utils/transactionSender";
-// import { getSignature } from "./utils/getSignature";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 // If you have problem landing transactions, read this: https://dev.jup.ag/docs/swap-api/send-swap-transaction#how-jupiter-estimates-priority-fee
 
-// Make sure that you are using your own RPC endpoint.
-// Helius and Triton have staked SOL and they can usually land transactions better.
 const connection = new Connection(
-  "https://api.mainnet-beta.solana.com", // We only support mainnet.
+  "https://api.mainnet-beta.solana.com", // Jupiter only on mainnet.
 );
 
-// Get API key from environment variables
 const apiKey = process.env.API_KEY;
-
 // Create Jupiter API client with API key if available
 const jupiterQuoteApi = createJupiterApiClient(apiKey ? { apiKey } : undefined);
 
@@ -32,8 +23,7 @@ console.log(
   "Using API endpoint:",
   apiKey
     ? "https://api.jup.ag/swap/v1 (with API key)"
-    : // ? "https://api.jup.ag/ultra (with API key)"
-      "https://lite-api.jup.ag/swap/v1 (free tier)",
+    : "https://lite-api.jup.ag/swap/v1 (free tier)",
 );
 
 async function getQuote() {
@@ -84,8 +74,10 @@ async function flowQuoteAndSwap() {
   console.log("Wallet:", payer.publicKey.toBase58());
 
   const quote = await getQuote();
+  console.log("Got Quote:");
   console.dir(quote, { depth: null });
   const swapResponse = await getSwapResponse(payer, quote);
+  console.log("Got Swap:");
   console.dir(swapResponse, { depth: null });
 
   // Serialize the transaction
@@ -97,7 +89,7 @@ async function flowQuoteAndSwap() {
   // Sign the transaction
   transaction.sign([payer]);
 
-  // We first simulate whether the transaction would be successful
+  // simulate whether the transaction would be successful
   const { value: simulatedTransactionResponse } =
     await connection.simulateTransaction(transaction, {
       replaceRecentBlockhash: true,
@@ -106,23 +98,17 @@ async function flowQuoteAndSwap() {
   const { err, logs } = simulatedTransactionResponse;
 
   if (err) {
-    // Simulation error, we can check the logs for more details
-    // If you are getting an invalid account error, make sure that you have the input mint account to actually swap from.
     console.error("Simulation Error:");
     console.error({ err, logs });
     return;
   }
 
   const serializedTransaction = Buffer.from(transaction.serialize());
-  // See Example for more sophistocated transaction handling.
+  // See example for more sophistocated transaction handling.
   // https://github.com/jup-ag/jupiter-quote-api-node/blob/main/example/utils/transactionSender.ts
-  // const blockhash = transaction.message.recentBlockhash;
-  const txid = await connection.sendRawTransaction(
-    serializedTransaction,
-    // SEND_OPTIONS
-  );
+  const txid = await connection.sendRawTransaction(serializedTransaction);
 
-  // Transaction hashes are signatures on Solana!
+  // Fun Fact: Transaction hashes are signatures on Solana!
   console.log(`https://solscan.io/tx/${txid}`);
 }
 
