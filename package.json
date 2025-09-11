@@ -4,19 +4,29 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "lint": "prettier {src,tests}/**/*.ts --check",
-    "fmt": "prettier {src,tests}/**/*.ts --write",
+    "build": "next build",
+    "api": "next dev",
+    "dev": "concurrently \"next dev\" \"make-agent dev\"",
+    "lint": "prettier . --check",
+    "fmt": "prettier . --write",
     "sample": "bun run src/sample.ts",
     "types": "tsc --noEmit"
   },
   "dependencies": {
     "@jup-ag/api": "^6.0.44",
     "@solana/web3.js": "^1.98.4",
-    "bs58": "^6.0.0"
+    "bs58": "^6.0.0",
+    "next": "^15.6.0-canary.0",
+    "swagger-ui-react": "^5.29.0",
+    "vercel-url": "^0.2.8",
+    "zod": "^4.1.7"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/swagger-ui-react": "^5.18.0",
+    "concurrently": "^9.2.1",
     "dotenv": "^17.2.2",
+    "make-agent": "^0.3.5",
     "prettier": "^3.6.2",
     "typescript": "^5.9.2"
   }
