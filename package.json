@@ -4,20 +4,20 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "fmt": "prettier . --write",
-    "sample": "bun run src/sample.ts"
-  },
-  "devDependencies": {
-    "@types/bun": "latest",
-    "dotenv": "^17.2.2",
-    "prettier": "^3.6.2"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
+    "lint": "prettier {src,tests}/**/*.ts --check",
+    "fmt": "prettier {src,tests}/**/*.ts --write",
+    "sample": "bun run src/sample.ts",
+    "types": "tsc --noEmit"
   },
   "dependencies": {
     "@jup-ag/api": "^6.0.44",
     "@solana/web3.js": "^1.98.4",
     "bs58": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "dotenv": "^17.2.2",
+    "prettier": "^3.6.2",
+    "typescript": "^5.9.2"
   }
 }
