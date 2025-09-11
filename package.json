@@ -6,7 +6,8 @@
   "scripts": {
     "lint": "prettier {src,tests}/**/*.ts --check",
     "fmt": "prettier {src,tests}/**/*.ts --write",
-    "sample": "bun run src/sample.ts"
+    "sample": "bun run src/sample.ts",
+    "types": "tsc --noEmit"
   },
   "devDependencies": {
     "@types/bun": "latest",
