@@ -35,6 +35,16 @@ export async function GET() {
             "Returns the quote for a given token address and chain ID.",
           parameters: [
             {
+              name: "solAddress",
+              in: "query",
+              required: true,
+              schema: {
+                type: "string",
+              },
+              description:
+                "The Connected user's Solana address (base58 encoded)",
+            },
+            {
               name: "inputMint",
               in: "query",
               required: true,
@@ -84,7 +94,7 @@ export async function GET() {
                 },
               },
             },
-            "400": { description: "Missing parameters" },
+            "400": { description: "Bad Request" },
           },
         },
       },
