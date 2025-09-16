@@ -6,7 +6,7 @@ import type {
   SwapRequest,
   SwapResponse,
 } from "@jup-ag/api";
-import type { QuoteQuery } from "@/app/api/quote/schema";
+import type { ParsedQuoteQuery } from "@/lib/schema";
 import { withErrorHandling } from "@/lib/error";
 
 export class JupiterApi {
@@ -42,7 +42,7 @@ export class JupiterApi {
   }
 
   async swapFlow(
-    params: QuoteQuery,
+    params: ParsedQuoteQuery,
   ): Promise<{ quote: QuoteResponse; swapResponse: SwapResponse }> {
     const { solAddress: userPublicKey, inputMint, outputMint, amount } = params;
     const quote = await this.getQuote({ inputMint, outputMint, amount });

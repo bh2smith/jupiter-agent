@@ -1,24 +1,26 @@
-import { PublicKey } from "@solana/web3.js";
+import { isAddress } from "@/lib/util";
 import { z } from "zod";
 
-export const solanaAddressSchema = z.string().refine((v) => {
-  try {
-    new PublicKey(v);
-    return true;
-  } catch {
-    return false;
-  }
-}, "Invalid Solana public key");
+export const solanaAddressSchema = z
+  .string()
+  .refine(isAddress, "Invalid Solana public key");
 
 export const QuoteQuerySchema = z.object({
   solAddress: solanaAddressSchema,
-  // TODO: Accept Symbols aswell.
-  inputMint: solanaAddressSchema,
-  outputMint: solanaAddressSchema,
+  // These can be either addresses or symbols.
+  inputMint: z.string(),
+  outputMint: z.string(),
   amount: z.coerce.number().int().positive(),
 });
 
 export type QuoteQuery = z.infer<typeof QuoteQuerySchema>;
+
+export type ParsedQuoteQuery = {
+  solAddress: string;
+  inputMint: string;
+  outputMint: string;
+  amount: number;
+};
 
 export type ValidationResult<T> =
   | { ok: true; query: T }

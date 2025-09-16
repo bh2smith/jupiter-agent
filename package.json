@@ -10,11 +10,12 @@
     "deploy": "make-agent deploy -u https://jupiter-agent.vercel.app/",
     "lint": "prettier . --check",
     "fmt": "prettier . --write",
-    "sample": "bun run src/sample.ts",
+    "sample": "bun run tinker/sample.ts",
     "types": "tsc --noEmit"
   },
   "dependencies": {
     "@jup-ag/api": "^6.0.44",
+    "@solana/spl-token": "^0.4.14",
     "@solana/web3.js": "^1.98.4",
     "bs58": "^6.0.0",
     "next": "^15.6.0-canary.8",
