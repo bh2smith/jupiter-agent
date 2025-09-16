@@ -1,23 +1,23 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { validateQuery } from "./schema";
-import { logic } from "./logic";
-import { toNextResponse } from "../../../lib/error";
+import { toNextResponse } from "@/lib/error";
+import { JupiterApi } from "@/lib/protocol";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const url = new URL(req.url);
-  const validationResult = validateQuery(url.searchParams);
-  if (!validationResult.ok) {
+  const validation = validateQuery(url.searchParams);
+  if (!validation.ok) {
     return NextResponse.json(
       {
         type: "InvalidInput",
-        ...validationResult.error,
+        ...validation.error,
       },
       { status: 400 },
     );
   }
-  console.log("quote/", validationResult.query);
+  console.log("quote/", validation.query);
   try {
-    const result = await logic(validationResult.query);
+    const result = new JupiterApi().swapFlow(validation.query);
     return NextResponse.json(result, { status: 200 });
   } catch (error: unknown) {
     return toNextResponse(error);
