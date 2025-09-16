@@ -22,6 +22,7 @@ export async function GET() {
           Responses from the quote tool should include a quote and swapResponse: 
             - The Quote should be displayed to the user.
             - The swapResponse should be be forwarded to generate-sol-tx tool.
+          For tools with solAddress, you should use the solAddress from the user's profile.
           `,
         tools: [{ type: "generate-sol-tx" }],
         image: `${PLUGIN_URL}/jup.png`,
@@ -54,7 +55,8 @@ export async function GET() {
               schema: {
                 type: "string",
               },
-              description: "The sell token address (base58 encoded)",
+              description:
+                "The sell token address (base58 encoded) or token symbol",
             },
             {
               name: "outputMint",
@@ -63,7 +65,8 @@ export async function GET() {
               schema: {
                 type: "string",
               },
-              description: "The buy token address (base58 encoded)",
+              description:
+                "The buy token address (base58 encoded) or token symbol",
             },
             {
               name: "amount",
@@ -72,7 +75,8 @@ export async function GET() {
               schema: {
                 type: "number",
               },
-              description: "The amount of the input token in lamports",
+              description:
+                "The amount of the input token in token units (not lamports)",
             },
           ],
           responses: {
