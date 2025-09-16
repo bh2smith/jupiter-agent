@@ -46,9 +46,10 @@ export class JupiterApi {
   ): Promise<{ quote: QuoteResponse; swapResponse: SwapResponse }> {
     const { solAddress: userPublicKey, inputMint, outputMint, amount } = params;
     const quote = await this.getQuote({ inputMint, outputMint, amount });
-    console.log("Got Quote:", JSON.stringify(quote, null, 2));
+    console.log("Quote:", JSON.stringify(quote, null, 2));
+
     const swapResponse = await this.getSwap(userPublicKey, quote);
-    console.log("Got Swap Tx:", JSON.stringify(swapResponse, null, 2));
+    console.log("SwapTx:", JSON.stringify(swapResponse, null, 2));
     return { quote, swapResponse };
   }
 }

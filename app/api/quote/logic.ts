@@ -43,6 +43,7 @@ export async function refineParams(
 
 export async function logic(params: QuoteQuery): Promise<ResponseData> {
   const refinedParams = await refineParams(params);
+  console.log("Refined Params", refinedParams);
   const jupiter = new JupiterApi();
   return jupiter.swapFlow(refinedParams);
 }
