@@ -1,17 +1,6 @@
 import { PublicKey } from "@solana/web3.js";
 import { z } from "zod";
 
-// Base58 character set for Solana addresses
-// const BASE58_REGEX = /^[1-9A-HJ-NP-Za-km-z]+$/;
-// const solanaAddressSchema = z
-//   .string()
-//   .min(32, "Solana address must be at least 32 characters")
-//   .max(44, "Solana address must be at most 44 characters")
-//   .regex(
-//     BASE58_REGEX,
-//     "Invalid Solana address format - must be base58 encoded",
-//   );
-
 export const solanaAddressSchema = z.string().refine((v) => {
   try {
     new PublicKey(v);

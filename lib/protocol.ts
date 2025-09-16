@@ -6,8 +6,8 @@ import type {
   SwapRequest,
   SwapResponse,
 } from "@jup-ag/api";
-import type { QuoteQuery } from "../app/api/quote/schema";
-import { withErrorHandling } from "./error";
+import type { QuoteQuery } from "@/app/api/quote/schema";
+import { withErrorHandling } from "@/lib/error";
 
 export class JupiterApi {
   private swapApi: SwapApi;
@@ -20,7 +20,7 @@ export class JupiterApi {
     return withErrorHandling(this.swapApi.quoteGet(params));
   }
 
-  async getSwapResponse(
+  async getSwap(
     userPublicKey: string,
     quote: QuoteResponse,
   ): Promise<SwapResponse> {
@@ -47,7 +47,7 @@ export class JupiterApi {
     const { solAddress: userPublicKey, inputMint, outputMint, amount } = params;
     const quote = await this.getQuote({ inputMint, outputMint, amount });
     console.log("Got Quote:", JSON.stringify(quote, null, 2));
-    const swapResponse = await this.getSwapResponse(userPublicKey, quote);
+    const swapResponse = await this.getSwap(userPublicKey, quote);
     console.log("Got Swap Tx:", JSON.stringify(swapResponse, null, 2));
     return { quote, swapResponse };
   }

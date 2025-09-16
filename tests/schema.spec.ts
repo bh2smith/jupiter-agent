@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { QuoteQuerySchema, solanaAddressSchema } from "../app/api/quote/schema";
+import { QuoteQuerySchema, solanaAddressSchema } from "@/app/api/quote/schema";
 import z from "zod";
 
 describe("Tool Schemas", () => {
