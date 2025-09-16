@@ -9,7 +9,7 @@ type ResponseData = {
   swapResponse: SwapResponse;
 };
 
-export async function parseParams(
+export async function refineParams(
   params: QuoteQuery,
 ): Promise<ParsedQuoteQuery> {
   const tokenMap = loadTokenMap();
@@ -42,7 +42,7 @@ export async function parseParams(
 }
 
 export async function logic(params: QuoteQuery): Promise<ResponseData> {
-  const parsedParams = await parseParams(params);
+  const refinedParams = await refineParams(params);
   const jupiter = new JupiterApi();
-  return jupiter.swapFlow(parsedParams);
+  return jupiter.swapFlow(refinedParams);
 }

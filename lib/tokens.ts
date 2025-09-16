@@ -39,7 +39,9 @@ export async function getTokenDetails(
   tokenMap: TokenMap,
 ): Promise<TokenInfo | undefined> {
   if (isAddress(symbolOrAddress)) {
-    return getMint(connection, new PublicKey(symbolOrAddress));
+    console.log("getTokenDetails", symbolOrAddress);
+    const token = await getMint(connection, new PublicKey(symbolOrAddress));
+    return { address: token.address, decimals: token.decimals };
   }
 
   // TokenMap has lower cased (sanitized) symbols

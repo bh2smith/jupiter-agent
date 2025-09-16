@@ -1,5 +1,6 @@
-import { loadTokenMap } from "@/lib/tokens";
-import { PublicKey } from "@solana/web3.js";
+import { getTokenDetails, loadTokenMap } from "@/lib/tokens";
+import { TokenInvalidAccountOwnerError } from "@solana/spl-token";
+import { Connection, PublicKey } from "@solana/web3.js";
 import { describe, it, expect } from "bun:test";
 
 describe("Tokens", () => {
@@ -17,5 +18,22 @@ describe("Tokens", () => {
       address: new PublicKey("6p6xgHyF7AeE6TZkSmFsko444wqoP15icUSqi2jfGiPN"),
       decimals: 6,
     });
+  });
+  it("getTokenDetails", async () => {
+    const tokenAddress = "CLoUDKc4Ane7HeQcPpE3YHnznRxhMimJ4MyaUqyHFzAu";
+    const connection = new Connection("https://api.mainnet-beta.solana.com");
+    const tokenDetails = await getTokenDetails(tokenAddress, connection, {});
+    expect(tokenDetails).toStrictEqual({
+      address: new PublicKey(tokenAddress),
+      decimals: 9,
+    });
+  });
+
+  it("getTokenDetails - Token Invalid Account Owner Error", async () => {
+    const tokenAddress = "HeLp6NuQkmYB4pYWo2zYs22mESHXPQYzXbB8n4V98jwC";
+    const connection = new Connection("https://api.mainnet-beta.solana.com");
+    await expect(
+      getTokenDetails(tokenAddress, connection, {}),
+    ).rejects.toBeInstanceOf(TokenInvalidAccountOwnerError);
   });
 });
