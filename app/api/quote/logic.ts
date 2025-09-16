@@ -13,7 +13,9 @@ export async function parseParams(
   params: QuoteQuery,
 ): Promise<ParsedQuoteQuery> {
   const tokenMap = loadTokenMap();
-  const connection = new Connection(process.env.RPC_URL || "https://api.mainnet-beta.solana.com");
+  const connection = new Connection(
+    process.env.RPC_URL || "https://api.mainnet-beta.solana.com",
+  );
   const {
     inputMint: sellToken,
     outputMint: buyToken,
