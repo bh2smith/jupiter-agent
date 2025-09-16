@@ -10,7 +10,7 @@ export const QuoteQuerySchema = z.object({
   // These can be either addresses or symbols.
   inputMint: z.string(),
   outputMint: z.string(),
-  amount: z.coerce.number().int().positive(),
+  amount: z.coerce.number().positive(),
 });
 
 export type QuoteQuery = z.infer<typeof QuoteQuerySchema>;

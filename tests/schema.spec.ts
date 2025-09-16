@@ -24,7 +24,7 @@ describe("Tool Schemas", () => {
     expect(schema.safeParse({ ...common, amount: 1 }).success).toBe(true);
     expect(schema.safeParse({ ...common, amount: "1" }).success).toBe(true);
 
-    expect(schema.safeParse({ ...common, amount: "1.23" }).success).toBe(false);
+    expect(schema.safeParse({ ...common, amount: "1.23" }).success).toBe(true);
     expect(schema.safeParse({ ...common, amount: -1 }).success).toBe(false);
     expect(schema.safeParse({ ...common, amount: 0 }).success).toBe(false);
 
