@@ -7,6 +7,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const url = new URL(req.url);
   const validation = validateQuery(url.searchParams);
   if (!validation.ok) {
+    console.error("quote/", validation.error);
     return NextResponse.json(
       {
         type: "InvalidInput",
