@@ -218,7 +218,35 @@ export async function GET() {
                 },
               },
             },
-            "400": { description: "Bad Request" },
+            "400": {
+              description: "Bad Request",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      type: {
+                        type: "string",
+                        enum: ["InvalidInput"],
+                      },
+                      errors: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                      properties: {
+                        type: "array",
+                        items: {
+                          type: "string",
+                        },
+                      },
+                    },
+                    required: ["type"],
+                  },
+                },
+              },
+            },
           },
         },
       },
