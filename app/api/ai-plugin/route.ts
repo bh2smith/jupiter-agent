@@ -22,7 +22,11 @@ export async function GET() {
           Responses from the quote tool should include a quote and swapResponse: 
             - The Quote should be displayed to the user.
             - The swapResponse should be be forwarded to generate-sol-tx tool.
-          Always pass the user's connected solAddress for tool calls requiring solAddress - unless otherwise specified.
+          ALWAYS 
+            - pass the user's connected solanaAddress for tool calls requiring solAddress - unless otherwise specified.
+            - describe any errors to the user based on the toolCall Response.
+          NEVER 
+            - infer token addresses. Use the exact information provided by the user (symbol or address).
           `,
         tools: [{ type: "generate-sol-tx" }],
         image: `${PLUGIN_URL}/jup.png`,
@@ -36,7 +40,7 @@ export async function GET() {
           operationId: "getQuote",
           summary: "Get quote and swap response from Jupiter Swap Router",
           description:
-            "Returns the quote and swap transaction for a given swap query. solAddress parameter is the connected user's, base58 encoded, solAddress",
+            "Returns the quote and swap transaction for a given swap query. solAddress parameter is the connected user's solanaAddress, base58 encoded, solAddress",
           parameters: [
             {
               name: "solAddress",

@@ -5,9 +5,10 @@ import { logic } from "./logic";
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
   const url = new URL(req.url);
-  const validation = validateQuery(url.searchParams);
+  const searchParams = url.searchParams;
+  console.log("quote/", searchParams);
+  const validation = validateQuery(searchParams);
   if (!validation.ok) {
-    console.error("quote/", JSON.stringify(validation.error, null, 2));
     return NextResponse.json(
       {
         type: "InvalidInput",
