@@ -1,11 +1,13 @@
 // 1. loads the solana_tokens.csv file from public/solana_tokens.csv
 // exports a function getTokenData(symbool: string) -> TokenInfo
 
-import { getMint } from "@solana/spl-token";
-import { PublicKey, type Connection } from "@solana/web3.js";
+import { fetchMint } from "@solana-program/token";
+import { type Address } from "@solana/addresses";
+import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import path from "path";
 import { isAddress } from "@/lib/util";
+import { createSolanaRpc } from "@solana/kit";
 
 export interface TokenInfo {
   address: PublicKey;
@@ -34,14 +36,21 @@ export function loadTokenMap(): TokenMap {
 
 export async function getTokenDetails(
   symbolOrAddress: string,
-  connection: Connection,
+  rpc: string,
   // Currated Registry of Tokens
   tokenMap: TokenMap,
 ): Promise<TokenInfo | undefined> {
   if (isAddress(symbolOrAddress)) {
     console.log("getTokenDetails", symbolOrAddress);
-    const token = await getMint(connection, new PublicKey(symbolOrAddress));
-    return { address: token.address, decimals: token.decimals };
+    const { data: token } = await fetchMint(
+      createSolanaRpc(rpc),
+      symbolOrAddress as Address,
+    );
+
+    return {
+      address: new PublicKey(symbolOrAddress),
+      decimals: token.decimals,
+    };
   }
 
   // TokenMap has lower cased (sanitized) symbols

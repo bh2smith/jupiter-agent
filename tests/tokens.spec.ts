@@ -1,9 +1,9 @@
 import { getTokenDetails, loadTokenMap } from "@/lib/tokens";
-import { TokenInvalidAccountOwnerError } from "@solana/spl-token";
-import { Connection, PublicKey } from "@solana/web3.js";
+import { PublicKey } from "@solana/web3.js";
 import { describe, it, expect } from "bun:test";
 
 describe("Tokens", () => {
+  const rpcUrl = "https://api.mainnet-beta.solana.com";
   it("loadTokenMap", async () => {
     const tokenMap = loadTokenMap();
     expect(tokenMap["usdc"]).toStrictEqual({
@@ -21,19 +21,32 @@ describe("Tokens", () => {
   });
   it("getTokenDetails", async () => {
     const tokenAddress = "CLoUDKc4Ane7HeQcPpE3YHnznRxhMimJ4MyaUqyHFzAu";
-    const connection = new Connection("https://api.mainnet-beta.solana.com");
-    const tokenDetails = await getTokenDetails(tokenAddress, connection, {});
+
+    const tokenDetails = await getTokenDetails(tokenAddress, rpcUrl, {});
     expect(tokenDetails).toStrictEqual({
       address: new PublicKey(tokenAddress),
       decimals: 9,
     });
   });
 
-  it("getTokenDetails - Token Invalid Account Owner Error", async () => {
+  it("getTokenDetails - Token Valid", async () => {
     const tokenAddress = "HeLp6NuQkmYB4pYWo2zYs22mESHXPQYzXbB8n4V98jwC";
-    const connection = new Connection("https://api.mainnet-beta.solana.com");
+    await expect(await getTokenDetails(tokenAddress, rpcUrl, {})).toStrictEqual(
+      {
+        address: new PublicKey(tokenAddress),
+        decimals: 9,
+      },
+    );
+  });
+
+  it("getTokenDetails - Wallet Address Not a Token", async () => {
     await expect(
-      getTokenDetails(tokenAddress, connection, {}),
-    ).rejects.toBeInstanceOf(TokenInvalidAccountOwnerError);
+      getTokenDetails(
+        // Wallet Address
+        "AjK4ynTVgNfKSEDkeK57RM6JG1KzzWg8f79sGDjHkANA",
+        rpcUrl,
+        {},
+      ),
+    ).rejects.toThrow("Failed to decode account data at address");
   });
 });

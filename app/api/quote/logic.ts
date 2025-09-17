@@ -2,7 +2,6 @@ import type { QuoteResponse, SwapResponse } from "@jup-ag/api";
 import { JupiterApi } from "@/lib/protocol";
 import type { ParsedQuoteQuery, QuoteQuery } from "@/lib/schema";
 import { getTokenDetails, loadTokenMap } from "@/lib/tokens";
-import { Connection } from "@solana/web3.js";
 
 type ResponseData = {
   quote: QuoteResponse;
@@ -13,9 +12,7 @@ export async function refineParams(
   params: QuoteQuery,
 ): Promise<ParsedQuoteQuery> {
   const tokenMap = loadTokenMap();
-  const connection = new Connection(
-    process.env.RPC_URL || "https://api.mainnet-beta.solana.com",
-  );
+  const rpcUrl = process.env.RPC_URL || "https://api.mainnet-beta.solana.com";
   const {
     inputMint: sellToken,
     outputMint: buyToken,
@@ -23,8 +20,8 @@ export async function refineParams(
     solAddress,
   } = params;
   const [sellTokenData, buyTokenData] = await Promise.all([
-    getTokenDetails(sellToken, connection, tokenMap),
-    getTokenDetails(buyToken, connection, tokenMap),
+    getTokenDetails(sellToken, rpcUrl, tokenMap),
+    getTokenDetails(buyToken, rpcUrl, tokenMap),
   ]);
   if (!buyTokenData) {
     throw new Error(`Could not determine buyToken info for: ${buyToken}`);
