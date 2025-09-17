@@ -22,7 +22,7 @@ export async function GET() {
           Responses from the quote tool should include a quote and swapResponse: 
             - The Quote should be displayed to the user.
             - The swapResponse should be be forwarded to generate-sol-tx tool.
-          For tools with solAddress, you should use the solAddress from the user's profile.
+          Always pass the user's connected solAddress for tool calls requiring solAddress - unless otherwise specified.
           `,
         tools: [{ type: "generate-sol-tx" }],
         image: `${PLUGIN_URL}/jup.png`,
