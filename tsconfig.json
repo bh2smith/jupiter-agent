@@ -32,6 +32,12 @@
       "@/*": ["./*"] // @/ maps to the project root
     }
   },
-  "include": ["next-env.d.ts", ".next/types/**/*.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "**/*.ts",
+    "**/*.tsx",
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    "**/*.mts"
+  ],
   "exclude": ["node_modules"]
 }

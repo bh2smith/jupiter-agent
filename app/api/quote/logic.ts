@@ -2,6 +2,7 @@ import type { QuoteResponse, SwapResponse } from "@jup-ag/api";
 import { JupiterApi } from "@/lib/protocol";
 import type { ParsedQuoteQuery, QuoteQuery } from "@/lib/schema";
 import { getTokenDetails, loadTokenMap } from "@/lib/tokens";
+import { normalizeError } from "@/lib/error";
 
 type ResponseData = {
   quote: QuoteResponse;
@@ -39,8 +40,13 @@ export async function refineParams(
 }
 
 export async function logic(params: QuoteQuery): Promise<ResponseData> {
-  const refinedParams = await refineParams(params);
-  console.log("Refined Params", refinedParams);
-  const jupiter = new JupiterApi();
-  return jupiter.swapFlow(refinedParams);
+  try {
+    const refinedParams = await refineParams(params);
+    console.log("Refined Params", refinedParams);
+    const jupiter = new JupiterApi();
+    return jupiter.swapFlow(refinedParams);
+  } catch (err: unknown) {
+    console.error("Error", String(err));
+    throw normalizeError(err);
+  }
 }
