@@ -45,8 +45,7 @@ export async function GET() {
               schema: {
                 type: "string",
               },
-              description:
-                "The connected user's solAddress (base58 encoded)",
+              description: "The connected user's solAddress (base58 encoded)",
             },
             {
               name: "inputMint",
