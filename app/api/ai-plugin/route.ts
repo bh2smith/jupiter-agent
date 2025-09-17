@@ -36,7 +36,7 @@ export async function GET() {
           operationId: "getQuote",
           summary: "Get quote and swap response from Jupiter Swap Router",
           description:
-            "Returns the quote and swap transaction for a given swap query.",
+            "Returns the quote and swap transaction for a given swap query. solAddress parameter is the connected user's, base58 encoded, solAddress",
           parameters: [
             {
               name: "solAddress",
@@ -46,7 +46,7 @@ export async function GET() {
                 type: "string",
               },
               description:
-                "The connected user's Solana address (base58 encoded)",
+                "The connected user's solAddress (base58 encoded)",
             },
             {
               name: "inputMint",
