@@ -6,7 +6,7 @@ import { type Address } from "@solana/addresses";
 import { PublicKey } from "@solana/web3.js";
 import fs from "fs";
 import path from "path";
-import { isAddress } from "@/lib/util";
+import { isAddress } from "../lib/util.js";
 import { createSolanaRpc } from "@solana/kit";
 
 export interface TokenInfo {

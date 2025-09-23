@@ -6,8 +6,8 @@ import type {
   SwapRequest,
   SwapResponse,
 } from "@jup-ag/api";
-import type { ParsedQuoteQuery } from "@/lib/schema";
-import { withErrorHandling } from "@/lib/error";
+import type { ParsedQuoteQuery } from "./schema.js";
+import { withErrorHandling } from "./error.js";
 
 const NATIVE_ASSET = "So11111111111111111111111111111111111111111";
 const WRAPPED_NATIVE = "So11111111111111111111111111111111111111112";
