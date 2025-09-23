@@ -7,7 +7,10 @@ import type {
   SwapResponse,
 } from "@jup-ag/api";
 import type { ParsedQuoteQuery } from "@/lib/schema";
-import { withErrorHandling, type NormalizedError } from "@/lib/error";
+import { withErrorHandling } from "@/lib/error";
+
+const NATIVE_ASSET = "So11111111111111111111111111111111111111111";
+const WRAPPED_NATIVE = "So11111111111111111111111111111111111111112";
 
 export class JupiterApi {
   private swapApi: SwapApi;
@@ -18,16 +21,20 @@ export class JupiterApi {
 
   async getQuote(
     params: QuoteGetRequest,
-  ): Promise<{ quote: QuoteResponse; nativeSellToken: boolean }> {
-    const nativeSellToken =
-      params.inputMint === "So11111111111111111111111111111111111111111";
+  ): Promise<{ quote: QuoteResponse; wrapAndUnwrapSol: boolean }> {
+    const nativeSellToken = params.inputMint === NATIVE_ASSET;
     if (nativeSellToken) {
-      // Native Asset.
-      params.inputMint = "So11111111111111111111111111111111111111112";
+      // Note that we are modifying the user's input here (but its not used again).
+      // Might be safer to just override the quote parameters without modification.
+      params.inputMint = WRAPPED_NATIVE;
+    }
+    const nativeBuyToken = params.outputMint === NATIVE_ASSET;
+    if (nativeBuyToken) {
+      params.outputMint = WRAPPED_NATIVE;
     }
     return {
       quote: await withErrorHandling(this.swapApi.quoteGet(params)),
-      nativeSellToken,
+      wrapAndUnwrapSol: nativeSellToken || nativeBuyToken,
     };
   }
 
@@ -59,7 +66,7 @@ export class JupiterApi {
     params: ParsedQuoteQuery,
   ): Promise<{ quote: QuoteResponse; swapResponse: SwapResponse }> {
     const { solAddress: userPublicKey, inputMint, outputMint, amount } = params;
-    const { quote, nativeSellToken } = await this.getQuote({
+    const { quote, wrapAndUnwrapSol } = await this.getQuote({
       inputMint,
       outputMint,
       amount,
@@ -69,7 +76,7 @@ export class JupiterApi {
     const swapResponse = await this.getSwap(
       userPublicKey,
       quote,
-      nativeSellToken,
+      wrapAndUnwrapSol,
     );
     console.log("SwapTx:", JSON.stringify(swapResponse, null, 2));
     return { quote, swapResponse };

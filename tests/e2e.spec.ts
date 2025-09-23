@@ -29,6 +29,16 @@ describe("E2E", () => {
     await expect(logic(query)).resolves.toBeDefined();
   });
 
+  it("Native Asset BuyToken SwapFlow", async () => {
+    const query = {
+      solAddress: "AjK4ynTVgNfKSEDkeK57RM6JG1KzzWg8f79sGDjHkANA",
+      inputMint: "USDC",
+      outputMint: "SOL",
+      amount: 0.01,
+    };
+    await expect(logic(query)).resolves.toBeDefined();
+  });
+
   it("Full Swap", async () => {
     const query = {
       solAddress: "AjK4ynTVgNfKSEDkeK57RM6JG1KzzWg8f79sGDjHkANA",
