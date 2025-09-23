@@ -3,6 +3,8 @@ import { Connection, Keypair, VersionedTransaction } from "@solana/web3.js";
 import { describe, it, expect } from "bun:test";
 import bs58 from "bs58";
 
+console.log = () => {};
+
 describe("E2E", () => {
   it("Jupiter SwapFlow", async () => {
     const query = {
