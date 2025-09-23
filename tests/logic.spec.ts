@@ -1,5 +1,5 @@
-import { refineParams } from "@/app/api/quote/logic";
-import { loadTokenMap } from "@/lib/tokens";
+import { refineParams } from "../src/api/quote";
+import { loadTokenMap } from "../src/lib/tokens";
 import { describe, it, expect } from "bun:test";
 
 const solAddress = "So11111111111111111111111111111111111111112";

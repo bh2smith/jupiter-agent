@@ -1,8 +1,13 @@
+import { Router, Request, Response } from "express";
 import type { QuoteResponse, SwapResponse } from "@jup-ag/api";
-import { JupiterApi } from "@/lib/protocol";
-import type { ParsedQuoteQuery, QuoteQuery } from "@/lib/schema";
-import { getTokenDetails, loadTokenMap } from "@/lib/tokens";
-import { normalizeError } from "@/lib/error";
+import { JupiterApi } from "../lib/protocol.js";
+import {
+  validateQuery,
+  type ParsedQuoteQuery,
+  type QuoteQuery,
+} from "../lib/schema.js";
+import { getTokenDetails, loadTokenMap } from "../lib/tokens.js";
+import { normalizeError } from "../lib/error.js";
 
 type ResponseData = {
   quote: QuoteResponse;
@@ -50,3 +55,23 @@ export async function logic(params: QuoteQuery): Promise<ResponseData> {
     throw normalizeError(err);
   }
 }
+
+const quoteHandler = Router();
+
+quoteHandler.get("/", async (req: Request, res: Response) => {
+  const search = new URLSearchParams(req.url);
+  console.log("quote/", search);
+  const validation = validateQuery(search);
+  if (!validation.ok) {
+    res.status(400).json({
+      type: "InvalidInput",
+      ...validation,
+    });
+    return;
+  }
+  console.log("quote/", validation.query);
+  const result = await logic(validation.query);
+  res.status(200).json(result);
+});
+
+export default quoteHandler;

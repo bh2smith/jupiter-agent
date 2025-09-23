@@ -1,4 +1,4 @@
-import { isAddress } from "@/lib/util";
+import { isAddress } from "../lib/util.js";
 import { z } from "zod";
 
 export const solanaAddressSchema = z

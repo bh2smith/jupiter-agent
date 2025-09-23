@@ -1,5 +1,3 @@
-import { NextResponse } from "next/server";
-
 export interface NormalizedError {
   message: string;
   status?: number;
@@ -82,18 +80,3 @@ export const withErrorHandling = <T>(promise: Promise<T>): Promise<T> =>
     Object.assign(err, ne);
     throw err;
   });
-
-export function toNextResponse(error: unknown): NextResponse {
-  if (isNormalizedError(error)) {
-    const statusCode = error.status || 500;
-    return NextResponse.json(
-      { message: error.message },
-      { status: statusCode },
-    );
-  }
-
-  return NextResponse.json(
-    { message: "Internal server error", raw: error },
-    { status: 500 },
-  );
-}

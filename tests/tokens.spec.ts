@@ -1,4 +1,4 @@
-import { getTokenDetails, loadTokenMap } from "@/lib/tokens";
+import { getTokenDetails, loadTokenMap } from "../src/lib/tokens.js";
 import { PublicKey } from "@solana/web3.js";
 import { describe, it, expect } from "bun:test";
 
