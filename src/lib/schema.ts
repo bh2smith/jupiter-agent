@@ -5,7 +5,7 @@ export const solanaAddressSchema = z
   .string()
   .refine(isAddress, "Invalid Solana public key");
 
-export const QuoteQuerySchema = z.object({
+export const QuoteSchema = z.object({
   solAddress: solanaAddressSchema,
   // These can be either addresses or symbols.
   inputMint: z.string(),
@@ -13,7 +13,7 @@ export const QuoteQuerySchema = z.object({
   amount: z.coerce.number().positive(),
 });
 
-export type QuoteQuery = z.infer<typeof QuoteQuerySchema>;
+export type QuoteQuery = z.infer<typeof QuoteSchema>;
 
 export type ParsedQuoteQuery = {
   solAddress: string;
@@ -26,14 +26,26 @@ export type ValidationResult<T> =
   | { ok: true; query: T }
   | { ok: false; error: object };
 
-export function validateQuery(
-  params: URLSearchParams,
-): ValidationResult<QuoteQuery> {
-  const result = QuoteQuerySchema.safeParse(
-    Object.fromEntries(params.entries()),
-  );
-  if (!result.success) {
-    return { ok: false, error: z.treeifyError(result.error) };
+export function validateQuery<T extends z.ZodType>(
+  req: { url: string },
+  schema: T,
+): ValidationResult<z.infer<T>> {
+  console.log("Raw request", req.url);
+  if (req.url.startsWith("/?")) {
+    req.url = req.url.slice(2);
   }
-  return { ok: true, query: result.data };
+  const params = new URLSearchParams(req.url);
+  console.log("params", params);
+  const result = schema.safeParse(Object.fromEntries(params.entries()));
+  console.log("parsed query", result);
+  if (!result.success) {
+    return { ok: false as const, error: z.treeifyError(result.error) };
+  }
+  return { ok: true as const, query: result.data };
+}
+
+export function isInvalid<T>(
+  result: ValidationResult<T>,
+): result is { ok: false; error: object } {
+  return result.ok === false;
 }

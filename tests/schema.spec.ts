@@ -1,5 +1,5 @@
 import { describe, it, expect } from "bun:test";
-import { QuoteQuerySchema, solanaAddressSchema } from "../src/lib/schema";
+import { QuoteSchema, solanaAddressSchema } from "../src/lib/schema";
 import z from "zod";
 
 describe("Tool Schemas", () => {
@@ -20,7 +20,7 @@ describe("Tool Schemas", () => {
       inputMint: validAddress42,
       outputMint: validAddress44,
     };
-    const schema = QuoteQuerySchema;
+    const schema = QuoteSchema;
     expect(schema.safeParse({ ...common, amount: 1 }).success).toBe(true);
     expect(schema.safeParse({ ...common, amount: "1" }).success).toBe(true);
 

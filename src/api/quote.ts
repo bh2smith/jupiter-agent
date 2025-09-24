@@ -4,7 +4,9 @@ import { JupiterApi } from "../lib/protocol.js";
 import {
   validateQuery,
   type ParsedQuoteQuery,
+  QuoteSchema,
   type QuoteQuery,
+  isInvalid,
 } from "../lib/schema.js";
 import { getTokenDetails, loadTokenMap } from "../lib/tokens.js";
 import { normalizeError } from "../lib/error.js";
@@ -59,18 +61,14 @@ export async function logic(params: QuoteQuery): Promise<ResponseData> {
 const quoteHandler = Router();
 
 quoteHandler.get("/", async (req: Request, res: Response) => {
-  const search = new URLSearchParams(req.url);
-  console.log("quote/", search);
-  const validation = validateQuery(search);
-  if (!validation.ok) {
+  const input = validateQuery(req, QuoteSchema);
+  if (isInvalid(input)) {
     res.status(400).json({
-      type: "InvalidInput",
-      ...validation,
+      error: input.error,
     });
     return;
   }
-  console.log("quote/", validation.query);
-  const result = await logic(validation.query);
+  const result = await logic(input.query);
   res.status(200).json(result);
 });
 
