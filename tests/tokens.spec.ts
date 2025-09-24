@@ -1,6 +1,5 @@
 import { getTokenDetails, loadTokenMap } from "../src/lib/tokens.js";
 import { PublicKey } from "@solana/web3.js";
-import { describe, it, expect } from "bun:test";
 
 describe("Tokens", () => {
   const rpcUrl = "https://api.mainnet-beta.solana.com";

@@ -1,6 +1,5 @@
 import { logic } from "../src/api/quote";
 import { Connection, Keypair, VersionedTransaction } from "@solana/web3.js";
-import { describe, it, expect } from "bun:test";
 import bs58 from "bs58";
 
 console.log = () => {};

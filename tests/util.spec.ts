@@ -1,5 +1,4 @@
 import { isAddress } from "../src/lib/util";
-import { describe, it, expect } from "bun:test";
 
 describe("Utility Library", () => {
   it("isAddress", async () => {
