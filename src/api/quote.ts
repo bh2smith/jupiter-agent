@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import type { QuoteResponse, SwapResponse } from "@jup-ag/api";
+import type { QuoteResponse, SwapResponse } from "jup-fork";
 import { JupiterApi } from "../lib/protocol.js";
 import {
   validateQuery,

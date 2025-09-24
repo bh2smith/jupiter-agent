@@ -14,7 +14,6 @@
     "types": "tsc --noEmit"
   },
   "dependencies": {
-    "@jup-ag/api": "^6.0.44",
     "@solana-program/token": "^0.6.0",
     "@solana/addresses": "^3.0.3",
     "@solana/rpc": "^3.0.3",
@@ -22,11 +21,12 @@
     "bs58": "^6.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "jup-fork": "^6.0.45",
     "zod": "^4.1.11"
   },
   "devDependencies": {
-    "@types/bun": "latest",
     "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
     "@types/swagger-ui-react": "^5.18.0",
     "biome": "^0.3.3",
     "concurrently": "^9.2.1",

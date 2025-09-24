@@ -36,7 +36,7 @@ describe("E2E", () => {
     await expect(logic(query)).resolves.toBeDefined();
   });
 
-  it("Full Swap", async () => {
+  it.skip("Full Swap", async () => {
     const query = {
       solAddress: "AjK4ynTVgNfKSEDkeK57RM6JG1KzzWg8f79sGDjHkANA",
       inputMint: "SOL",

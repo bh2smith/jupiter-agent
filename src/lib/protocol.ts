@@ -1,11 +1,12 @@
-import { createJupiterApiClient } from "@jup-ag/api";
+import { createJupiterApiClient } from "jup-fork";
 import type {
   QuoteGetRequest,
   QuoteResponse,
   SwapApi,
   SwapRequest,
   SwapResponse,
-} from "@jup-ag/api";
+  TokenApi,
+} from "jup-fork";
 import type { ParsedQuoteQuery } from "./schema.js";
 import { withErrorHandling } from "./error.js";
 
@@ -14,9 +15,14 @@ const WRAPPED_NATIVE = "So11111111111111111111111111111111111111112";
 
 export class JupiterApi {
   private swapApi: SwapApi;
+  private tokenApi: TokenApi;
 
   constructor(apiKey?: string) {
-    this.swapApi = createJupiterApiClient(apiKey ? { apiKey } : undefined);
+    const { swap, token } = createJupiterApiClient(
+      apiKey ? { apiKey } : undefined,
+    );
+    this.swapApi = swap;
+    this.tokenApi = token;
   }
 
   async getQuote(
@@ -80,5 +86,14 @@ export class JupiterApi {
     );
     console.log("SwapTx:", JSON.stringify(swapResponse, null, 2));
     return { quote, swapResponse };
+  }
+
+  async getToken(query: string): Promise<void> {
+    const result = await this.tokenApi.searchTokens({ query });
+    console.log(result.length);
+    console.log(
+      "getToken result",
+      result.map((x) => x.symbol),
+    );
   }
 }
