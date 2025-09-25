@@ -1,5 +1,6 @@
 import { createJupiterApiClient } from "jup-fork";
 import type {
+  MintInformation,
   QuoteGetRequest,
   QuoteResponse,
   SwapApi,
@@ -88,12 +89,23 @@ export class JupiterApi {
     return { quote, swapResponse };
   }
 
-  async getToken(query: string): Promise<void> {
+  async searchToken(
+    query: string,
+    minScore: number = 80,
+  ): Promise<MintInformation[]> {
     const result = await this.tokenApi.searchTokens({ query });
-    console.log(result.length);
-    console.log(
-      "getToken result",
-      result.map((x) => x.symbol),
-    );
+    // Filter with minScore OR exact Symbol & half minScore.
+    return result.filter(relaxedScoreExactSymbolFilter(minScore, query));
   }
 }
+
+const exactSymbolFilter = (symbol: string) => (t: MintInformation) =>
+  t.symbol.toLowerCase() === symbol.toLowerCase();
+
+export const minScoreFilter = (n: number) => (t: MintInformation) =>
+  (t.organicScore ?? 0) >= n;
+
+const relaxedScoreExactSymbolFilter =
+  (minScore: number, symbol: string) => (t: MintInformation) =>
+    minScoreFilter(minScore)(t) ||
+    (exactSymbolFilter(symbol)(t) && minScoreFilter(minScore / 2)(t));

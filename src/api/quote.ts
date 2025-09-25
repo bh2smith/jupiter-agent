@@ -1,5 +1,5 @@
 import { Router, Request, Response } from "express";
-import type { QuoteResponse, SwapResponse } from "jup-fork";
+import type { MintInformation, QuoteResponse, SwapResponse } from "jup-fork";
 import { JupiterApi } from "../lib/protocol.js";
 import {
   validateQuery,
@@ -11,14 +11,20 @@ import {
 import { getTokenDetails, loadTokenMap } from "../lib/tokens.js";
 import { normalizeError } from "../lib/error.js";
 
-type ResponseData = {
-  quote: QuoteResponse;
-  swapResponse: SwapResponse;
-};
+type TokenCandidates = { buy: MintInformation[]; sell: MintInformation[] };
+
+export type ResponseData =
+  | { ok: false; candidates: TokenCandidates }
+  | { ok: true; quote: QuoteResponse; swapResponse: SwapResponse };
+
+type ParameterRefinement =
+  | { ok: false; tokenCandidates: TokenCandidates }
+  | { ok: true; query: ParsedQuoteQuery };
 
 export async function refineParams(
+  jup: JupiterApi,
   params: QuoteQuery,
-): Promise<ParsedQuoteQuery> {
+): Promise<ParameterRefinement> {
   const tokenMap = loadTokenMap();
   const rpcUrl = process.env.RPC_URL || "https://api.mainnet-beta.solana.com";
   const {
@@ -28,30 +34,58 @@ export async function refineParams(
     solAddress,
   } = params;
   const [sellTokenData, buyTokenData] = await Promise.all([
-    getTokenDetails(sellToken, rpcUrl, tokenMap),
-    getTokenDetails(buyToken, rpcUrl, tokenMap),
+    getTokenDetails(sellToken, rpcUrl, jup, tokenMap),
+    getTokenDetails(buyToken, rpcUrl, jup, tokenMap),
   ]);
-  if (!buyTokenData) {
+  // Not Found Cases:
+  if (buyTokenData.kind === "not_found") {
     throw new Error(`Could not determine buyToken info for: ${buyToken}`);
   }
-  if (!sellTokenData) {
+  if (sellTokenData.kind === "not_found") {
     throw new Error(`Could not determine sellToken info for: ${sellToken}`);
   }
+
+  // Candidate Cases:
+  if (
+    buyTokenData.kind === "candidates" ||
+    sellTokenData.kind === "candidates"
+  ) {
+    const candidates: TokenCandidates = { buy: [], sell: [] };
+    if (buyTokenData.kind === "candidates") {
+      console.log(`Multiple Candidates for buyToken: ${buyTokenData.tokens}`);
+      candidates.buy = buyTokenData.tokens;
+    }
+    if (sellTokenData.kind === "candidates") {
+      console.log(`Multiple Candidates for buyToken: ${sellTokenData.tokens}`);
+      candidates.sell = sellTokenData.tokens;
+    }
+    return { ok: false, tokenCandidates: candidates };
+  }
+
+  // TODO: check cases.
   return {
-    solAddress,
-    inputMint: sellTokenData.address.toString(),
-    outputMint: buyTokenData.address.toString(),
-    // Convert to lamports
-    amount: amount * 10 ** sellTokenData.decimals,
+    ok: true,
+    query: {
+      solAddress,
+      inputMint: sellTokenData.token.address.toString(),
+      outputMint: buyTokenData.token.address.toString(),
+      // Convert to lamports
+      amount: amount * 10 ** sellTokenData.token.decimals,
+    },
   };
 }
 
 export async function logic(params: QuoteQuery): Promise<ResponseData> {
+  const jupiter = new JupiterApi();
   try {
-    const refinedParams = await refineParams(params);
+    const refinedParams = await refineParams(jupiter, params);
     console.log("Refined Params", refinedParams);
-    const jupiter = new JupiterApi();
-    return jupiter.swapFlow(refinedParams);
+    if (refinedParams.ok === true) {
+      const swapData = await jupiter.swapFlow(refinedParams.query);
+      return { ok: true, ...swapData };
+    } else {
+      return { ok: false, candidates: refinedParams.tokenCandidates };
+    }
   } catch (err: unknown) {
     console.error("Error", String(err));
     throw normalizeError(err);

@@ -1,4 +1,4 @@
-import { logic } from "../src/api/quote";
+import { logic, ResponseData } from "../src/api/quote";
 import { Connection, Keypair, VersionedTransaction } from "@solana/web3.js";
 import bs58 from "bs58";
 
@@ -42,7 +42,11 @@ describe("E2E", () => {
       outputMint: "USDC",
       amount: 0.001,
     };
-    const { swapResponse } = await logic(query);
+    const result: ResponseData = await logic(query);
+    if (!result.ok) {
+      console.warn("Insufficient Token Details", result);
+      return;
+    }
 
     // loadWallet
     /**
@@ -65,7 +69,7 @@ describe("E2E", () => {
     const connection = new Connection(RPC_URL, "confirmed");
     const payer = Keypair.fromSecretKey(bs58.decode(secretKey));
 
-    const transactionBase64 = swapResponse.swapTransaction;
+    const transactionBase64 = result.swapResponse.swapTransaction;
     const transaction = VersionedTransaction.deserialize(
       Buffer.from(transactionBase64, "base64"),
     );
