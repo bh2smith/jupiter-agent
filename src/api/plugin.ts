@@ -84,44 +84,44 @@ const manifest = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ResponseExecutable" },
-                examples: {
-                  summary: "Executable quote + swap",
-                  value: {
-                    ok: true,
-                    quote: {
-                      inputMint: "EPjFWd...",
-                      inAmount: "1000000",
-                      outputMint: "So1111...",
-                      outAmount: "12345",
-                      otherAmountThreshold: "12000",
-                      swapMode: "ExactIn",
-                      slippageBps: 50,
-                      priceImpactPct: "0.0012",
-                      routePlan: [
-                        {
-                          swapInfo: {
-                            ammKey: "AMM_KEY",
-                            label: "Jupiter",
-                            inputMint: "EPjFWd...",
-                            outputMint: "So1111...",
-                            inAmount: "1000000",
-                            outAmount: "12345",
-                            feeAmount: "0",
-                            feeMint: "EPjFWd...",
-                          },
-                          percent: 100,
-                        },
-                      ],
-                      contextSlot: 271234567,
-                      timeTaken: 87,
-                    },
-                    swapResponse: {
-                      swapTransaction: "BASE64...",
-                      lastValidBlockHeight: 271999999,
-                      prioritizationFeeLamports: 0,
-                    },
-                  },
-                },
+                // examples: {
+                //   summary: "Executable quote + swap",
+                //   value: {
+                //     ok: true,
+                //     quote: {
+                //       inputMint: "EPjFWd...",
+                //       inAmount: "1000000",
+                //       outputMint: "So1111...",
+                //       outAmount: "12345",
+                //       otherAmountThreshold: "12000",
+                //       swapMode: "ExactIn",
+                //       slippageBps: 50,
+                //       priceImpactPct: "0.0012",
+                //       routePlan: [
+                //         {
+                //           swapInfo: {
+                //             ammKey: "AMM_KEY",
+                //             label: "Jupiter",
+                //             inputMint: "EPjFWd...",
+                //             outputMint: "So1111...",
+                //             inAmount: "1000000",
+                //             outAmount: "12345",
+                //             feeAmount: "0",
+                //             feeMint: "EPjFWd...",
+                //           },
+                //           percent: 100,
+                //         },
+                //       ],
+                //       contextSlot: 271234567,
+                //       timeTaken: 87,
+                //     },
+                //     swapResponse: {
+                //       swapTransaction: "BASE64...",
+                //       lastValidBlockHeight: 271999999,
+                //       prioritizationFeeLamports: 0,
+                //     },
+                //   },
+                // },
               },
             },
           },
@@ -130,15 +130,15 @@ const manifest = {
             content: {
               "application/json": {
                 schema: { $ref: "#/components/schemas/ResponseCandidates" },
-                examples: {
-                  summary: "Needs user to pick tokens",
-                  value: {
-                    candidates: {
-                      buy: usdcCandidates,
-                      sell: usdtCandidates,
-                    },
-                  },
-                },
+                // examples: {
+                //   summary: "Needs user to pick tokens",
+                //   value: {
+                //     candidates: {
+                //       buy: usdcCandidates,
+                //       sell: usdtCandidates,
+                //     },
+                //   },
+                // },
               },
             },
           },
