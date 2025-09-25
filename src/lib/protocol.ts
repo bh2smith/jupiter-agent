@@ -1,11 +1,13 @@
-import { createJupiterApiClient } from "@jup-ag/api";
+import { createJupiterApiClient } from "jup-fork";
 import type {
+  MintInformation,
   QuoteGetRequest,
   QuoteResponse,
   SwapApi,
   SwapRequest,
   SwapResponse,
-} from "@jup-ag/api";
+  TokenApi,
+} from "jup-fork";
 import type { ParsedQuoteQuery } from "./schema.js";
 import { withErrorHandling } from "./error.js";
 
@@ -14,9 +16,14 @@ const WRAPPED_NATIVE = "So11111111111111111111111111111111111111112";
 
 export class JupiterApi {
   private swapApi: SwapApi;
+  private tokenApi: TokenApi;
 
   constructor(apiKey?: string) {
-    this.swapApi = createJupiterApiClient(apiKey ? { apiKey } : undefined);
+    const { swap, token } = createJupiterApiClient(
+      apiKey ? { apiKey } : undefined,
+    );
+    this.swapApi = swap;
+    this.tokenApi = token;
   }
 
   async getQuote(
@@ -81,4 +88,24 @@ export class JupiterApi {
     console.log("SwapTx:", JSON.stringify(swapResponse, null, 2));
     return { quote, swapResponse };
   }
+
+  async searchToken(
+    query: string,
+    minScore: number = 80,
+  ): Promise<MintInformation[]> {
+    const result = await this.tokenApi.searchTokens({ query });
+    // Filter with minScore OR exact Symbol & half minScore.
+    return result.filter(relaxedScoreExactSymbolFilter(minScore, query));
+  }
 }
+
+const exactSymbolFilter = (symbol: string) => (t: MintInformation) =>
+  t.symbol.toLowerCase() === symbol.toLowerCase();
+
+export const minScoreFilter = (n: number) => (t: MintInformation) =>
+  (t.organicScore ?? 0) >= n;
+
+const relaxedScoreExactSymbolFilter =
+  (minScore: number, symbol: string) => (t: MintInformation) =>
+    minScoreFilter(minScore)(t) ||
+    (exactSymbolFilter(symbol)(t) && minScoreFilter(minScore / 2)(t));

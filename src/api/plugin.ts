@@ -1,4 +1,5 @@
 import { ACCOUNT_ID, PLUGIN_URL, SUPPORTED_NETWORKS } from "../config.js";
+import { usdcCandidates, usdtCandidates } from "./responseExamples.js";
 
 const manifest = {
   openapi: "3.0.0",
@@ -37,25 +38,26 @@ const manifest = {
         tags: ["quote"],
         operationId: "getQuote",
         summary: "Get quote and swap response from Jupiter Swap Router",
-        description:
-          "Returns the quote and swap transaction for a given swap query. solAddress parameter is the connected user's solanaAddress, base58 encoded, solAddress",
+        description: `
+          Returns the quote and swap transaction for a given swap query. 
+          solAddress parameter is the connected user's solanaAddress, base58 encoded, solAddress
+          If the Tool Response with 300 Status - this means that the users buy or sell token query was insufficient.
+          The response will contain candidate buy and/or sell tokens that the user can choose from.
+          Use the candidate token ID as the corresponding input parameter on second attempt.
+        `,
         parameters: [
           {
             name: "solAddress",
             in: "query",
             required: true,
-            schema: {
-              type: "string",
-            },
+            schema: { type: "string" },
             description: "The connected user's solAddress (base58 encoded)",
           },
           {
             name: "inputMint",
             in: "query",
             required: true,
-            schema: {
-              type: "string",
-            },
+            schema: { type: "string" },
             description:
               "The sell token address (base58 encoded) or token symbol",
           },
@@ -63,9 +65,7 @@ const manifest = {
             name: "outputMint",
             in: "query",
             required: true,
-            schema: {
-              type: "string",
-            },
+            schema: { type: "string" },
             description:
               "The buy token address (base58 encoded) or token symbol",
           },
@@ -73,151 +73,71 @@ const manifest = {
             name: "amount",
             in: "query",
             required: true,
-            schema: {
-              type: "number",
-            },
+            schema: { type: "number" },
             description:
               "The amount of the input token in token units (not lamports)",
           },
         ],
         responses: {
           "200": {
-            description: "Quote and Swap transaction response",
+            description: "Executable quote + swap",
             content: {
               "application/json": {
-                schema: {
-                  type: "object",
-                  properties: {
+                schema: { $ref: "#/components/schemas/ResponseExecutable" },
+                examples: {
+                  summary: "Executable quote + swap",
+                  value: {
+                    ok: true,
                     quote: {
-                      type: "object",
-                      properties: {
-                        inputMint: {
-                          type: "string",
-                          description: "The input token mint address",
-                        },
-                        inAmount: {
-                          type: "string",
-                          description: "The input amount in lamports",
-                        },
-                        outputMint: {
-                          type: "string",
-                          description: "The output token mint address",
-                        },
-                        outAmount: {
-                          type: "string",
-                          description: "The output amount in lamports",
-                        },
-                        otherAmountThreshold: {
-                          type: "string",
-                          description:
-                            "The minimum amount threshold for the output",
-                        },
-                        swapMode: {
-                          type: "string",
-                          enum: ["ExactIn", "ExactOut"],
-                          description: "The swap mode",
-                        },
-                        slippageBps: {
-                          type: "number",
-                          description: "Slippage tolerance in basis points",
-                        },
-                        priceImpactPct: {
-                          type: "string",
-                          description: "Price impact percentage",
-                        },
-                        routePlan: {
-                          type: "array",
-                          items: {
-                            type: "object",
-                            properties: {
-                              swapInfo: {
-                                type: "object",
-                                properties: {
-                                  ammKey: {
-                                    type: "string",
-                                    description: "The AMM pool key",
-                                  },
-                                  label: {
-                                    type: "string",
-                                    description: "The AMM label",
-                                  },
-                                  inputMint: {
-                                    type: "string",
-                                    description: "Input mint for this swap",
-                                  },
-                                  outputMint: {
-                                    type: "string",
-                                    description: "Output mint for this swap",
-                                  },
-                                  inAmount: {
-                                    type: "string",
-                                    description: "Input amount for this swap",
-                                  },
-                                  outAmount: {
-                                    type: "string",
-                                    description: "Output amount for this swap",
-                                  },
-                                  feeAmount: {
-                                    type: "string",
-                                    description: "Fee amount for this swap",
-                                  },
-                                  feeMint: {
-                                    type: "string",
-                                    description: "Fee mint address",
-                                  },
-                                },
-                              },
-                              percent: {
-                                type: "number",
-                                description: "Percentage of the route",
-                              },
-                            },
+                      inputMint: "EPjFWd...",
+                      inAmount: "1000000",
+                      outputMint: "So1111...",
+                      outAmount: "12345",
+                      otherAmountThreshold: "12000",
+                      swapMode: "ExactIn",
+                      slippageBps: 50,
+                      priceImpactPct: "0.0012",
+                      routePlan: [
+                        {
+                          swapInfo: {
+                            ammKey: "AMM_KEY",
+                            label: "Jupiter",
+                            inputMint: "EPjFWd...",
+                            outputMint: "So1111...",
+                            inAmount: "1000000",
+                            outAmount: "12345",
+                            feeAmount: "0",
+                            feeMint: "EPjFWd...",
                           },
+                          percent: 100,
                         },
-                        contextSlot: {
-                          type: "number",
-                          description: "The context slot number",
-                        },
-                        timeTaken: {
-                          type: "number",
-                          description: "Time taken to generate the quote",
-                        },
-                      },
-                      required: [
-                        "inputMint",
-                        "inAmount",
-                        "outputMint",
-                        "outAmount",
-                        "swapMode",
-                        "slippageBps",
-                        "routePlan",
                       ],
+                      contextSlot: 271234567,
+                      timeTaken: 87,
                     },
                     swapResponse: {
-                      type: "object",
-                      properties: {
-                        swapTransaction: {
-                          type: "string",
-                          description:
-                            "The unsigned base64 encoded swap transaction",
-                        },
-                        lastValidBlockHeight: {
-                          type: "number",
-                          description: "The last valid block height",
-                        },
-                        prioritizationFeeLamports: {
-                          type: "number",
-                          description: "The prioritization fee in lamports",
-                        },
-                      },
-                      required: [
-                        "swapTransaction",
-                        "lastValidBlockHeight",
-                        "prioritizationFeeLamports",
-                      ],
+                      swapTransaction: "BASE64...",
+                      lastValidBlockHeight: 271999999,
+                      prioritizationFeeLamports: 0,
                     },
                   },
-                  required: ["quote", "swapResponse"],
+                },
+              },
+            },
+          },
+          "300": {
+            description: "Multiple token candidates; refine and try again",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/ResponseCandidates" },
+                examples: {
+                  summary: "Needs user to pick tokens",
+                  value: {
+                    candidates: {
+                      buy: usdcCandidates,
+                      sell: usdtCandidates,
+                    },
+                  },
                 },
               },
             },
@@ -229,24 +149,38 @@ const manifest = {
                 schema: {
                   type: "object",
                   properties: {
-                    type: {
-                      type: "string",
-                      enum: ["InvalidInput"],
-                    },
-                    errors: {
-                      type: "array",
-                      items: {
-                        type: "string",
-                      },
-                    },
-                    properties: {
-                      type: "array",
-                      items: {
-                        type: "string",
-                      },
-                    },
+                    type: { type: "string", enum: ["InvalidInput"] },
+                    errors: { type: "array", items: { type: "string" } },
+                    properties: { type: "array", items: { type: "string" } },
                   },
                   required: ["type"],
+                },
+              },
+            },
+          },
+          "404": {
+            description: "Token not found",
+            content: {
+              "application/json": {
+                schema: {
+                  $ref: "#/components/schemas/TokenNotFoundError",
+                },
+                examples: {
+                  buyTokenNotFound: {
+                    summary: "outputMint not found",
+                    value: {
+                      errorType: "TokenNotFound",
+                      description: "Token not found for outputMint: FAKECOIN",
+                    },
+                  },
+                  sellTokenNotFound: {
+                    summary: "inputMint not found",
+                    value: {
+                      errorType: "TokenNotFound",
+                      description:
+                        "Token not found for inputMint: NotARealMint",
+                    },
+                  },
                 },
               },
             },
@@ -258,7 +192,259 @@ const manifest = {
   components: {
     parameters: {},
     responses: {},
-    schemas: {},
+    schemas: {
+      ResponseCandidates: {
+        type: "object",
+        properties: {
+          candidates: { $ref: "#/components/schemas/TokenCandidates" },
+        },
+        required: ["candidates"],
+      },
+      ResponseExecutable: {
+        type: "object",
+        properties: {
+          quote: { $ref: "#/components/schemas/QuoteResponse" },
+          swapResponse: { $ref: "#/components/schemas/SwapResponse" },
+        },
+        required: ["quote", "swapResponse"],
+      },
+      TokenCandidates: {
+        type: "object",
+        properties: {
+          buy: {
+            type: "array",
+            items: { $ref: "#/components/schemas/MintInformation" },
+          },
+          sell: {
+            type: "array",
+            items: { $ref: "#/components/schemas/MintInformation" },
+          },
+        },
+        required: ["buy", "sell"],
+      },
+      TokenNotFoundError: {
+        type: "object",
+        properties: {
+          errorType: {
+            type: "string",
+            enum: ["TokenNotFound"],
+            description: "Fixed error type discriminator",
+          },
+          description: {
+            type: "string",
+            description:
+              "Human-readable explanation of which token was not found",
+          },
+        },
+        required: ["errorType", "description"],
+      },
+      QuoteResponse: {
+        type: "object",
+        properties: {
+          inputMint: {
+            type: "string",
+            description: "The input token mint address",
+          },
+          inAmount: {
+            type: "string",
+            description: "The input amount in lamports",
+          },
+          outputMint: {
+            type: "string",
+            description: "The output token mint address",
+          },
+          outAmount: {
+            type: "string",
+            description: "The output amount in lamports",
+          },
+          otherAmountThreshold: {
+            type: "string",
+            description: "The minimum amount threshold for the output",
+          },
+          swapMode: {
+            type: "string",
+            enum: ["ExactIn", "ExactOut"],
+            description: "The swap mode",
+          },
+          slippageBps: {
+            type: "number",
+            description: "Slippage tolerance in basis points",
+          },
+          priceImpactPct: {
+            type: "string",
+            description: "Price impact percentage",
+          },
+          routePlan: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                swapInfo: {
+                  type: "object",
+                  properties: {
+                    ammKey: { type: "string", description: "The AMM pool key" },
+                    label: { type: "string", description: "The AMM label" },
+                    inputMint: {
+                      type: "string",
+                      description: "Input mint for this swap",
+                    },
+                    outputMint: {
+                      type: "string",
+                      description: "Output mint for this swap",
+                    },
+                    inAmount: {
+                      type: "string",
+                      description: "Input amount for this swap",
+                    },
+                    outAmount: {
+                      type: "string",
+                      description: "Output amount for this swap",
+                    },
+                    feeAmount: {
+                      type: "string",
+                      description: "Fee amount for this swap",
+                    },
+                    feeMint: {
+                      type: "string",
+                      description: "Fee mint address",
+                    },
+                  },
+                },
+                percent: {
+                  type: "number",
+                  description: "Percentage of the route",
+                },
+              },
+              required: ["swapInfo", "percent"],
+            },
+          },
+          contextSlot: {
+            type: "number",
+            description: "The context slot number",
+          },
+          timeTaken: {
+            type: "number",
+            description: "Time taken to generate the quote",
+          },
+        },
+        required: [
+          "inputMint",
+          "inAmount",
+          "outputMint",
+          "outAmount",
+          "swapMode",
+          "slippageBps",
+          "routePlan",
+        ],
+      },
+      SwapResponse: {
+        type: "object",
+        properties: {
+          swapTransaction: {
+            type: "string",
+            description: "The unsigned base64 encoded swap transaction",
+          },
+          lastValidBlockHeight: {
+            type: "number",
+            description: "The last valid block height",
+          },
+          prioritizationFeeLamports: {
+            type: "number",
+            description: "The prioritization fee in lamports",
+          },
+        },
+        required: [
+          "swapTransaction",
+          "lastValidBlockHeight",
+          "prioritizationFeeLamports",
+        ],
+      },
+      MintInformation: {
+        type: "object",
+        properties: {
+          id: { type: "string", description: "The token's mint address" },
+          name: { type: "string" },
+          symbol: { type: "string" },
+          icon: { type: "string", nullable: true },
+          decimals: { type: "integer" },
+          twitter: { type: "string", nullable: true },
+          telegram: { type: "string", nullable: true },
+          website: { type: "string", nullable: true },
+          dev: {
+            type: "string",
+            nullable: true,
+            description: "The token's developer address",
+          },
+          circSupply: { type: "number", nullable: true },
+          totalSupply: { type: "number", nullable: true },
+          tokenProgram: {
+            type: "string",
+            description: "The token program address",
+          },
+          launchpad: { type: "string", nullable: true },
+          partnerConfig: { type: "string", nullable: true },
+          graduatedPool: { type: "string", nullable: true },
+          graduatedAt: { type: "string", nullable: true },
+          holderCount: { type: "integer", nullable: true },
+          fdv: { type: "number", nullable: true },
+          mcap: { type: "number", nullable: true },
+          usdPrice: { type: "number", nullable: true },
+          priceBlockId: { type: "integer", nullable: true },
+          liquidity: { type: "number", nullable: true },
+          stats5m: { $ref: "#/components/schemas/SwapStats", nullable: true },
+          stats1h: { $ref: "#/components/schemas/SwapStats", nullable: true },
+          stats6h: { $ref: "#/components/schemas/SwapStats", nullable: true },
+          stats24h: { $ref: "#/components/schemas/SwapStats", nullable: true },
+          firstPool: {
+            type: "object",
+            nullable: true,
+            properties: {
+              id: { type: "string" },
+              createdAt: { type: "string" },
+            },
+          },
+          audit: {
+            type: "object",
+            nullable: true,
+            properties: {
+              isSus: { type: "boolean", nullable: true },
+              mintAuthorityDisabled: { type: "boolean", nullable: true },
+              freezeAuthorityDisabled: { type: "boolean", nullable: true },
+              topHoldersPercentage: { type: "number", nullable: true },
+              devBalancePercentage: { type: "number", nullable: true },
+              devMigrations: { type: "number", nullable: true },
+            },
+          },
+          organicScore: { type: "number" },
+          organicScoreLabel: {
+            type: "string",
+            enum: ["high", "medium", "low"],
+          },
+          isVerified: { type: "boolean", nullable: true },
+          cexes: { type: "array", items: { type: "string" }, nullable: true },
+          tags: { type: "array", items: { type: "string" }, nullable: true },
+          updatedAt: { type: "string", format: "date-time" },
+        },
+      },
+      SwapStats: {
+        type: "object",
+        properties: {
+          priceChange: { type: "number", nullable: true },
+          holderChange: { type: "number", nullable: true },
+          liquidityChange: { type: "number", nullable: true },
+          volumeChange: { type: "number", nullable: true },
+          buyVolume: { type: "number", nullable: true },
+          sellVolume: { type: "number", nullable: true },
+          buyOrganicVolume: { type: "number", nullable: true },
+          sellOrganicVolume: { type: "number", nullable: true },
+          numBuys: { type: "integer", nullable: true },
+          numSells: { type: "integer", nullable: true },
+          numTraders: { type: "integer", nullable: true },
+          numOrganicBuyers: { type: "integer", nullable: true },
+          numNetBuyers: { type: "integer", nullable: true },
+        },
+      },
+    },
   },
 };
 
