@@ -9,13 +9,13 @@ import {
   isInvalid,
 } from "../lib/schema.js";
 import { getTokenDetails, loadTokenMap } from "../lib/tokens.js";
-import { normalizeError } from "../lib/error.js";
+import { TokenNotFoundError } from "../lib/error.js";
 
 type TokenCandidates = { buy: MintInformation[]; sell: MintInformation[] };
 
 export type ResponseData =
-  | { ok: false; candidates: TokenCandidates }
-  | { ok: true; quote: QuoteResponse; swapResponse: SwapResponse };
+  | { status: 300; data: { candidates: TokenCandidates } }
+  | { status: 200; data: { quote: QuoteResponse; swapResponse: SwapResponse } };
 
 type ParameterRefinement =
   | { ok: false; tokenCandidates: TokenCandidates }
@@ -27,6 +27,8 @@ export async function refineParams(
 ): Promise<ParameterRefinement> {
   const tokenMap = loadTokenMap();
   const rpcUrl = process.env.RPC_URL || "https://api.mainnet-beta.solana.com";
+  const minScore = parseInt(process.env.MIN_TOKEN_SCORE || "95");
+
   const {
     inputMint: sellToken,
     outputMint: buyToken,
@@ -34,15 +36,14 @@ export async function refineParams(
     solAddress,
   } = params;
   const [sellTokenData, buyTokenData] = await Promise.all([
-    getTokenDetails(sellToken, rpcUrl, jup, tokenMap),
-    getTokenDetails(buyToken, rpcUrl, jup, tokenMap),
+    getTokenDetails(sellToken, rpcUrl, jup, tokenMap, minScore),
+    getTokenDetails(buyToken, rpcUrl, jup, tokenMap, minScore),
   ]);
-  // Not Found Cases:
   if (buyTokenData.kind === "not_found") {
-    throw new Error(`Could not determine buyToken info for: ${buyToken}`);
+    throw new TokenNotFoundError("buyToken", buyToken);
   }
   if (sellTokenData.kind === "not_found") {
-    throw new Error(`Could not determine sellToken info for: ${sellToken}`);
+    throw new TokenNotFoundError("sellToken", sellToken);
   }
 
   // Candidate Cases:
@@ -52,11 +53,15 @@ export async function refineParams(
   ) {
     const candidates: TokenCandidates = { buy: [], sell: [] };
     if (buyTokenData.kind === "candidates") {
-      console.log(`Multiple Candidates for buyToken: ${buyTokenData.tokens}`);
+      console.log(
+        `Multiple Candidates for buyToken: ${JSON.stringify(buyTokenData.tokens)}`,
+      );
       candidates.buy = buyTokenData.tokens;
     }
     if (sellTokenData.kind === "candidates") {
-      console.log(`Multiple Candidates for buyToken: ${sellTokenData.tokens}`);
+      console.log(
+        `Multiple Candidates for buyToken: ${JSON.stringify(sellTokenData.tokens)}`,
+      );
       candidates.sell = sellTokenData.tokens;
     }
     return { ok: false, tokenCandidates: candidates };
@@ -77,19 +82,12 @@ export async function refineParams(
 
 export async function logic(params: QuoteQuery): Promise<ResponseData> {
   const jupiter = new JupiterApi();
-  try {
-    const refinedParams = await refineParams(jupiter, params);
-    console.log("Refined Params", refinedParams);
-    if (refinedParams.ok === true) {
-      const swapData = await jupiter.swapFlow(refinedParams.query);
-      return { ok: true, ...swapData };
-    } else {
-      return { ok: false, candidates: refinedParams.tokenCandidates };
-    }
-  } catch (err: unknown) {
-    console.error("Error", String(err));
-    throw normalizeError(err);
+  const refinedParams = await refineParams(jupiter, params); // may throw TokenNotFoundError
+  if (refinedParams.ok === true) {
+    const swapData = await jupiter.swapFlow(refinedParams.query);
+    return { status: 200, data: { ...swapData } };
   }
+  return { status: 300, data: { candidates: refinedParams.tokenCandidates } };
 }
 
 const quoteHandler = Router();
@@ -97,13 +95,29 @@ const quoteHandler = Router();
 quoteHandler.get("/", async (req: Request, res: Response) => {
   const input = validateQuery(req, QuoteSchema);
   if (isInvalid(input)) {
-    res.status(400).json({
-      error: input.error,
-    });
+    res
+      .status(400)
+      .json({ errorType: "InvalidInput", description: input.error });
     return;
   }
-  const result = await logic(input.query);
-  res.status(200).json(result);
+
+  try {
+    const { status, data } = await logic(input.query);
+    res.status(status).json(data);
+  } catch (err: unknown) {
+    // 404 Token Not Found
+    if (err instanceof TokenNotFoundError) {
+      res.status(err.status).json(err.toJSON());
+      return;
+    }
+
+    // Everything else -> 500
+    console.error("Unhandled error in /api/quote:", err);
+    res.status(500).json({
+      errorType: "InternalError",
+      description: "Internal Server Error",
+    });
+  }
 });
 
 export default quoteHandler;

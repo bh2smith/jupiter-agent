@@ -80,3 +80,17 @@ export const withErrorHandling = <T>(promise: Promise<T>): Promise<T> =>
     Object.assign(err, ne);
     throw err;
   });
+
+export class TokenNotFoundError extends Error {
+  status = 404 as const;
+  constructor(
+    public field: "sellToken" | "buyToken",
+    public query: string,
+  ) {
+    super(`Token not found for ${field}: ${query}`);
+    this.name = "TokenNotFound";
+  }
+  toJSON() {
+    return { errorType: this.name, description: this.message };
+  }
+}

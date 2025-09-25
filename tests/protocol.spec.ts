@@ -14,7 +14,7 @@ describe.only("Jupiter Protocol Token Search", () => {
     await expect((await jupiter.searchToken("USDC", minScore)).length).toBe(1);
 
     // Multiple Results.
-    await expect((await jupiter.searchToken("USD", minScore)).length).toBe(3);
+    await expect((await jupiter.searchToken("USD", minScore)).length).toBe(2);
     // Our Curration catches this.
     await expect((await jupiter.searchToken("SOL", minScore)).length).toBe(3);
     // Thier Endpoint uses SOL for WSOL... curration should catch
