@@ -5,7 +5,8 @@ dotenv.config();
 
 describe("Jupiter Protocol Token Search", () => {
   const jupiter = new JupiterApi();
-  it.only("searches with 95%", async () => {
+  // We can't be running this, because the dynamic nature of tokens causes these to change.
+  it.skip("searches with 95%", async () => {
     const minScore = 40;
     await expect((await jupiter.searchToken("NOMNOM", minScore)).length).toBe(
       1,

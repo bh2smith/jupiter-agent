@@ -1,4 +1,4 @@
-import { logic, ResponseData } from "../src/api/quote";
+import { logic, ResponseData } from "../src/api/tools/quote";
 import { Connection, Keypair, VersionedTransaction } from "@solana/web3.js";
 import bs58 from "bs58";
 
