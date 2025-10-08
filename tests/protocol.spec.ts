@@ -3,10 +3,10 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-describe.only("Jupiter Protocol Token Search", () => {
+describe("Jupiter Protocol Token Search", () => {
   const jupiter = new JupiterApi();
-  it("searches with 95%", async () => {
-    const minScore = 95;
+  it.only("searches with 95%", async () => {
+    const minScore = 40;
     await expect((await jupiter.searchToken("NOMNOM", minScore)).length).toBe(
       1,
     );

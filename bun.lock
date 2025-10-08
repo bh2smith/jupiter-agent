@@ -11,8 +11,8 @@
         "bs58": "^6.0.0",
         "cors": "^2.8.5",
         "express": "^5.1.0",
-        "jup-fork": "^6.0.45",
-        "zod": "^4.1.11",
+        "jup-fork": "^6.0.46",
+        "zod": "^4.1.12",
       },
       "devDependencies": {
         "@types/express": "^5.0.3",
@@ -20,10 +20,10 @@
         "@types/swagger-ui-react": "^5.18.0",
         "biome": "^0.3.3",
         "concurrently": "^9.2.1",
-        "dotenv": "^17.2.2",
+        "dotenv": "^17.2.3",
         "make-agent": "^0.4.1",
         "prettier": "^3.6.2",
-        "typescript": "^5.9.2",
+        "typescript": "^5.9.3",
       },
     },
   },
@@ -574,7 +574,7 @@
 
     "jsprim": ["jsprim@1.4.2", "", { "dependencies": { "assert-plus": "1.0.0", "extsprintf": "1.3.0", "json-schema": "0.4.0", "verror": "1.10.0" } }, "sha512-P2bSOMAc/ciLz6DzgjVlGJP9+BrJWu5UDGK70C2iweC5QBIeFf0ZXRvGjEj2uYgrY2MkAAhsSWHDWlFtEroZWw=="],
 
-    "jup-fork": ["jup-fork@6.0.45", "", {}, "sha512-4TLEEahOzDGV63OZCV0gtmLd+ZyK5v5T10bKdmgaqM0k05WTAcvRlFf0njSU7gSozQhZSQt7DqKhawYBay27Wg=="],
+    "jup-fork": ["jup-fork@6.0.46", "", {}, "sha512-oG2fKDYdvZHXI4W6xla9EBIHBm8LltDUy/IhpLCp4Q3A7LX3gPT1jSANItF0N6Do1uzR/p2na0J5g1hUGi6zTw=="],
 
     "kaiser": ["kaiser@0.0.4", "", { "dependencies": { "earlgrey-runtime": ">=0.0.10" } }, "sha512-m8ju+rmBqvclZmyrOXgGGhOYSjKJK6RN1NhqEltemY87UqZOxEkizg9TOy1vQSyJ01Wx6SAPuuN0iO2Mgislvw=="],
 

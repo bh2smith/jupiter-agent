@@ -21,7 +21,7 @@
     "bs58": "^6.0.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
-    "jup-fork": "^6.0.45",
+    "jup-fork": "^6.0.46",
     "zod": "^4.1.12"
   },
   "devDependencies": {

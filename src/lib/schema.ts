@@ -5,6 +5,9 @@ export const solanaAddressSchema = z
   .string()
   .refine(isAddress, "Invalid Solana public key");
 
+export const PortfolioSchema = z.object({ solAddress: solanaAddressSchema });
+export type PortfolioQuery = z.infer<typeof PortfolioSchema>;
+
 export const QuoteSchema = z.object({
   solAddress: solanaAddressSchema,
   // These can be either addresses or symbols.

@@ -1,15 +1,15 @@
 import { Router, Request, Response } from "express";
 import type { MintInformation, QuoteResponse, SwapResponse } from "jup-fork";
-import { JupiterApi } from "../lib/protocol.js";
+import { JupiterApi } from "../../lib/protocol.js";
 import {
   validateQuery,
   type ParsedQuoteQuery,
   QuoteSchema,
   type QuoteQuery,
   isInvalid,
-} from "../lib/schema.js";
-import { getTokenDetails, loadTokenMap } from "../lib/tokens.js";
-import { TokenNotFoundError } from "../lib/error.js";
+} from "../../lib/schema.js";
+import { getTokenDetails, loadTokenMap } from "../../lib/tokens.js";
+import { TokenNotFoundError } from "../../lib/error.js";
 
 type TokenCandidates = { buy: MintInformation[]; sell: MintInformation[] };
 

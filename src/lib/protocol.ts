@@ -1,5 +1,6 @@
 import { createJupiterApiClient } from "jup-fork";
 import type {
+  HoldingsResponse,
   MintInformation,
   QuoteGetRequest,
   QuoteResponse,
@@ -7,6 +8,7 @@ import type {
   SwapRequest,
   SwapResponse,
   TokenApi,
+  UltraApi,
 } from "jup-fork";
 import type { ParsedQuoteQuery } from "./schema.js";
 import { withErrorHandling } from "./error.js";
@@ -15,15 +17,17 @@ const NATIVE_ASSET = "So11111111111111111111111111111111111111111";
 const WRAPPED_NATIVE = "So11111111111111111111111111111111111111112";
 
 export class JupiterApi {
+  private ultraApi: UltraApi;
   private swapApi: SwapApi;
   private tokenApi: TokenApi;
 
   constructor(apiKey?: string) {
-    const { swap, token } = createJupiterApiClient(
+    const { swap, token, ultra } = createJupiterApiClient(
       apiKey ? { apiKey } : undefined,
     );
     this.swapApi = swap;
     this.tokenApi = token;
+    this.ultraApi = ultra;
   }
 
   async getQuote(
@@ -43,6 +47,12 @@ export class JupiterApi {
       quote: await withErrorHandling(this.swapApi.quoteGet(params)),
       wrapAndUnwrapSol: nativeSellToken || nativeBuyToken,
     };
+  }
+
+  async getHoldings(userPublicKey: string): Promise<HoldingsResponse> {
+    return this.ultraApi.getHoldings({
+      address: userPublicKey,
+    });
   }
 
   async getSwap(
