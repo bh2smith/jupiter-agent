@@ -35,7 +35,6 @@ const manifest = {
   paths: {
     "/api/quote": {
       get: {
-        tags: ["quote"],
         operationId: "getQuote",
         summary: "Get quote and swap response from Jupiter Swap Router",
         description: `
@@ -188,11 +187,68 @@ const manifest = {
         },
       },
     },
+    "/api/portfolio": {
+      get: {
+        operationId: "getPortfolio",
+        summary: "Get user holdings from Jupiter Ultra API",
+        description: "Returns the detailed account of user holdings",
+        parameters: [
+          {
+            name: "solAddress",
+            in: "query",
+            required: true,
+            schema: { type: "string" },
+            description: "The connected user's solAddress (base58 encoded)",
+          },
+        ],
+        responses: {
+          "200": {
+            description: "Executable quote + swap",
+            content: {
+              "application/json": {
+                schema: { $ref: "#/components/schemas/HoldingsResponse" },
+              },
+            },
+          },
+        },
+      },
+    },
   },
   components: {
     parameters: {},
     responses: {},
     schemas: {
+      HoldingsResponse: {
+        type: "object",
+        properties: {
+          amount: {
+            type: "string",
+            description: "Total SOL in lamports",
+          },
+          uiAmount: {
+            type: "number",
+            description: "Total SOL in UI units after applying decimals",
+          },
+          uiAmountString: {
+            type: "string",
+            description:
+              "Total SOL as string in UI units after applying decimals",
+          },
+          tokens: {
+            type: "object",
+            description:
+              "Other token holdings organized by mint address as keys",
+            additionalProperties: {
+              description: "Token mint address as key",
+              type: "array",
+              items: {
+                $ref: "#/components/schemas/TokenAccount",
+              },
+            },
+          },
+        },
+        required: ["amount", "uiAmount", "uiAmountString", "tokens"],
+      },
       ResponseCandidates: {
         type: "object",
         properties: {
@@ -207,6 +263,54 @@ const manifest = {
           swapResponse: { $ref: "#/components/schemas/SwapResponse" },
         },
         required: ["quote", "swapResponse"],
+      },
+      TokenAccount: {
+        type: "object",
+        properties: {
+          account: {
+            type: "string",
+            description: "The token account address",
+          },
+          amount: {
+            type: "string",
+            description: "Token amount in atomic/raw units",
+          },
+          uiAmount: {
+            type: "number",
+            description: "Token amount in UI units after applying decimals",
+          },
+          uiAmountString: {
+            type: "string",
+            description:
+              "Token amount as string in UI units after applying decimals",
+          },
+          isFrozen: {
+            type: "boolean",
+            description: "Whether the token account is frozen",
+          },
+          isAssociatedTokenAccount: {
+            type: "boolean",
+            description: "Whether this is an associated token account",
+          },
+          decimals: {
+            type: "number",
+            description: "Number of decimal places for the token",
+          },
+          programId: {
+            type: "string",
+            description: "The token program ID",
+          },
+        },
+        required: [
+          "account",
+          "amount",
+          "uiAmount",
+          "uiAmountString",
+          "isFrozen",
+          "isAssociatedTokenAccount",
+          "decimals",
+          "programId",
+        ],
       },
       TokenCandidates: {
         type: "object",

@@ -1,7 +1,8 @@
 import cors from "cors";
 import express from "express";
 import swaggerHandler from "./swagger.js";
-import quoteHandler from "./api/quote.js";
+import quoteHandler from "./api/tools/quote.js";
+import portfolioHandler from "./api/tools/portfolio.js";
 import manifest from "./api/plugin.js";
 
 const app = express();
@@ -23,6 +24,7 @@ app.get("/", (_req, res) => res.redirect(302, "/docs"));
 
 // Tool Routes
 app.use("/api/quote", quoteHandler);
+app.use("/api/portfolio", portfolioHandler);
 
 app.get(
   ["/favicon.ico", "/favicon-16x16.png", "/favicon-32x32.png"],

@@ -1,4 +1,4 @@
-import { refineParams } from "../src/api/quote";
+import { refineParams } from "../src/api/tools/quote";
 import { JupiterApi } from "../src/lib/protocol";
 import { loadTokenMap } from "../src/lib/tokens";
 
